@@ -76,6 +76,9 @@ class CPU:
         self.A = operand
         self.PC += bytes
 
+    def BRK(self, operand, cycles, bytes): # Load A with a value
+        time.sleep((bytes/10))
+
 
     opcodes = {
         # LDA
@@ -83,7 +86,7 @@ class CPU:
         0xAD: (LDA, ABS, 4, 3),
 
         # BRK
-
+        0x00: (BRK, IMP, 1, 7)
 
     }
 
