@@ -17,10 +17,22 @@ class CPU:
         self.Y = 0
         self.PC = 0
         self.SP = 0
-        self.memory = [0] * 16
+
+        self.C = 0
+        self.Z = 0
+        self.I = 0
+        self.D = 0
+        self.V = 0
+        self.N = 0
+
+        self.B = 0
+        self.O = 1
+
+        self.memory = [0] * 2048
 
         # example program
-        self.program = [0xA9, 100, 0xA9, 255, 0xA9, 233, 0xA9, 4]
+        self.program = [0xA9, 5, 0xAD, 7, 5, 0]
+        self.memory[0x0507] = 123
 
 
     def LOAD_ROM(self): # testing binary stuff
@@ -31,14 +43,16 @@ class CPU:
     def ACC(self):
         pass
     def IMM(self):
-        operand = self.memory[self.PC + 1]
-        return operand
+        return self.memory[self.PC + 1]
     def IMP(self):
         pass
     def REL(self):
         pass
     def ABS(self):
-        pass
+        low = self.memory[self.PC + 1]
+        high = self.memory[self.PC + 2]
+        a = (high << 8) | low
+        return self.memory[a]
     def ABX(self):
         pass
     def ABY(self):
@@ -58,13 +72,19 @@ class CPU:
 
 
 
-    def LDA(self, operand, cycles): # Load A with a value
-        self.A = self.memory[self.PC + 1] & 0xFF
-        self.PC += 2
+    def LDA(self, operand, cycles, bytes): # Load A with a value
+        self.A = operand
+        self.PC += bytes
 
 
     opcodes = {
-        0xA9: (LDA, IMM, 2),
+        # LDA
+        0xA9: (LDA, IMM, 2, 2),
+        0xAD: (LDA, ABS, 4, 3),
+
+        # BRK
+
+
     }
 
     def execute(self):
@@ -73,10 +93,10 @@ class CPU:
 
         try:
 
-            func, addm, cycles = self.opcodes[opcode]
+            func, addm, cycles, bytes = self.opcodes[opcode]
             operand = addm(self)
             print("operand",operand)
-            func(self, operand, cycles)
+            func(self, operand, cycles, bytes)
             time.sleep((cycles/10))
 
         except KeyError:
