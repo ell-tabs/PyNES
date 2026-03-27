@@ -15,6 +15,6 @@ cpu.LOAD_ROM()
 cpu.print_memory()
 
 while True:
-    cpu.execute()
     cpu.PRINT_VALUES()
-    time.sleep(2)
+    cpu.execute()
+    time.sleep(1)
